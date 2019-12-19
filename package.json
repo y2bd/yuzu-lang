@@ -1,0 +1,30 @@
+{
+  "name": "yuzu-lang",
+  "version": "0.1.0",
+  "description": "A programming language",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/y2bd/yuzu-lang.git"
+  },
+  "keywords": [
+    "programming-language",
+    "compiler",
+    "typescript"
+  ],
+  "author": "y2bd",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/y2bd/yuzu-lang/issues"
+  },
+  "homepage": "https://github.com/y2bd/yuzu-lang#readme",
+  "devDependencies": {
+    "prettier": "^1.19.1",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.3"
+  }
+}
