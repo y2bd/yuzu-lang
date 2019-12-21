@@ -1,21 +1,27 @@
 import { Token, Tokens, TokenType } from "./token";
 
-const isNameCharacter = (char?: string) => char && char.search(/^\w/i) === 0;
+const isWhitespace = (char?: string) => char && char.search(/^\s/i) === 0;
+const isNameCharacter = (char?: string) =>
+  char && char.search(/^[\w!#$%&*+/<=>?@\\^|\-~]/i) === 0;
 const isNumericCharacter = (char?: string) =>
   char && char.search(/^[0-9\.]/i) === 0;
 
 export class Lexer {
-  private readonly tokens: Record<string, TokenType>;
+  private readonly tokens: Record<string, string>;
   private index: number = 0;
 
   public constructor(private readonly text: string) {
-    this.tokens = {} as Record<string, TokenType>;
+    this.tokens = {} as Record<string, string>;
     for (const tokenType of Object.keys(Tokens) as TokenType[]) {
       const tokenLiteral = Tokens[tokenType];
       if (tokenLiteral) {
         this.tokens[tokenLiteral] = tokenType;
       }
     }
+  }
+
+  public addToken(tokenType: string, tokenLiteral: string) {
+    this.tokens[tokenLiteral] = tokenType;
   }
 
   public nextToken(): Token {
@@ -26,6 +32,14 @@ export class Lexer {
       // handle before symbolic tokens as we want to temporarily ignore all other tokens
       if (char === Tokens.SingleQuote) {
         return this.consumeStringUntil("SingleQuote");
+      }
+
+      // handle all other single-character tokens
+      if (this.tokens[char]) {
+        return {
+          type: this.tokens[char] as TokenType,
+          text: char
+        };
       }
 
       // handle numerics before names
@@ -39,11 +53,18 @@ export class Lexer {
       if (isNameCharacter(char)) {
         return this.consumeName();
       }
+
+      // ignore any whitespace!!
+      if (isWhitespace(char)) {
+        continue;
+      }
+
+      throw new Error(`Could not parse unexpected character '${char}'`);
     }
 
     return {
       type: "EOF",
-      text: "",
+      text: ""
     };
   }
 
@@ -68,7 +89,7 @@ export class Lexer {
 
     if (!foundEndToken) {
       throw new Error(
-        `Tried to consume until found end token ${expected} but did not find before consuming entire string`,
+        `Tried to consume until found end token ${expected} but did not find before consuming entire string`
       );
     }
 
@@ -77,7 +98,7 @@ export class Lexer {
 
     return {
       type: "String",
-      text: consumed,
+      text: consumed
     };
   }
 
@@ -94,7 +115,7 @@ export class Lexer {
 
     return {
       type: "Numeric",
-      text: this.text.substring(start, this.index),
+      text: this.text.substring(start, this.index)
     };
   }
 
@@ -114,13 +135,13 @@ export class Lexer {
     const matchingToken = this.tokens[name];
     if (matchingToken) {
       return {
-        type: matchingToken,
-        text: name,
+        type: matchingToken as TokenType,
+        text: name
       };
     } else {
       return {
         type: "Name",
-        text: name,
+        text: name
       };
     }
   }

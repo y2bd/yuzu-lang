@@ -12,7 +12,7 @@ export interface InfixParselet {
 }
 
 const isInfixParselet = (
-  parselet: PrefixParselet | InfixParselet,
+  parselet: PrefixParselet | InfixParselet
 ): parselet is InfixParselet =>
   (parselet as InfixParselet).precedence !== undefined;
 
@@ -32,7 +32,7 @@ export class Parser {
    */
   public register(
     tokenType: TokenType,
-    parselet: PrefixParselet | InfixParselet,
+    parselet: PrefixParselet | InfixParselet
   ) {
     if (isInfixParselet(parselet)) {
       this.registerInfix(tokenType, parselet);
@@ -47,6 +47,18 @@ export class Parser {
 
   public registerInfix(tokenKey: TokenType, parselet: InfixParselet) {
     this.infixParselets[tokenKey] = parselet;
+  }
+
+  public registerRuntimeInfix(
+    tokenStr: string,
+    infixParselet: InfixParselet,
+    prefixParselet?: PrefixParselet
+  ) {
+    this.lexer.addToken(tokenStr, tokenStr);
+    this.infixParselets[tokenStr as TokenType] = infixParselet;
+    if (prefixParselet) {
+      this.prefixParselets[tokenStr as TokenType] = prefixParselet;
+    }
   }
 
   /**
@@ -64,7 +76,7 @@ export class Parser {
     const prefix = this.prefixParselets[token.type];
     if (!prefix) {
       throw new Error(
-        `Tried to parse ${token.type} with prefix parselet but none was found`,
+        `Tried to parse ${token.type} with prefix parselet but none was found`
       );
     }
 
@@ -72,6 +84,10 @@ export class Parser {
     // note that parselets get access to the full parser
     // and may internally consume as many tokens as they wish
     let left = prefix.parse(this, token);
+
+    // some expressions do not allow for infix operations
+    // for safety/confusion reasons
+    const cannotBeLeftHandInInfixExpression = !!left.cannotBeLeftHandInInfixExpression;
 
     // check to see if there is an upcoming token with available infix parselet
     // and that that infix parselet has a higher precedence than the current expression
@@ -83,13 +99,16 @@ export class Parser {
     // before returning the `5`, we look ahead and see the upcoming `* 4`.
     // we know that `*` has higher precedence than `+`, and therefore we can't just stop and return `5`.
     // instead, we need to parse and return `5 * 4`.
-    while (precedence < this._upcomingPrecedence()) {
+    while (
+      !cannotBeLeftHandInInfixExpression &&
+      precedence < this._upcomingPrecedence()
+    ) {
       token = this.consume();
 
       const infix = this.infixParselets[token.type];
       if (!infix) {
         throw new Error(
-          `Tried to parse ${token.type} with infix parselet but none was found`,
+          `Tried to parse ${token.type} with infix parselet but none was found`
         );
       }
 
@@ -127,7 +146,7 @@ export class Parser {
       const token = this._lookAhead(0);
       if (token.type !== expected) {
         throw new Error(
-          `Expected token ${expected}, but instead found ${token.type}`,
+          `Expected token ${expected}, but instead found ${token.type}`
         );
       }
 

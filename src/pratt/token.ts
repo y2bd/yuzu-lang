@@ -10,16 +10,20 @@ export const Tokens = {
   Colon: ":",
   SingleQuote: "'",
   Assign: "=",
+  Backslash: "\\",
   If: "if",
   Then: "then",
   Else: "else",
   Elif: "elif",
   End: "end",
   Do: "do",
+  Fun: "fun",
+  Blop: "blop",
+  Eval: "eval",
   Name: null as null,
   Numeric: null as null,
   String: null as null,
-  EOF: null as null,
+  EOF: null as null
 } as const;
 
 export type TokenType = keyof typeof Tokens;
