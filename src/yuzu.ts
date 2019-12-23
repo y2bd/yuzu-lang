@@ -1,11 +1,10 @@
-import { BlopExpression, blopParselet } from "./parselets/blopParselet";
+import { blopParselet } from "./parselets/blopParselet";
 import { callParselet } from "./parselets/callParselet";
 import { doParselet } from "./parselets/doParselet";
 import { evalParselet } from "./parselets/evalParselet";
 import { funParselet } from "./parselets/funParselet";
 import { groupParselet } from "./parselets/groupParselet";
 import { ifParselet } from "./parselets/ifParselet";
-import { infixOperatorParselet } from "./parselets/infixOperatorParselet";
 import { lambdaParselet } from "./parselets/lambdaParselet";
 import { nameParselet } from "./parselets/nameParselet";
 import { numericalParselet } from "./parselets/numericalParselet";
@@ -13,6 +12,7 @@ import { stringParselet } from "./parselets/stringParselet";
 import { EvaluationResult, Expression, valueBinding } from "./pratt/expression";
 import { Lexer } from "./pratt/lexer";
 import { Parser } from "./pratt/parser";
+import { bropParselet } from "./parselets/bropParselet";
 
 export function parseYuzuExpression(yuzuExpression: string) {
   const parser = getParser(yuzuExpression);
@@ -46,19 +46,6 @@ export function evaluateYuzuFile(yuzuFile: string) {
     while (true) {
       // parse
       const nextExpression = parser.parseExpression();
-
-      // incorporate parser extensions
-      if (nextExpression.type === "blop") {
-        const blopExpr = nextExpression as BlopExpression;
-
-        parser.registerRuntimeInfix(
-          blopExpr.name,
-          infixOperatorParselet(blopExpr.precedence),
-          // by doing this, the user can also use infix operators
-          // as functions
-          nameParselet
-        );
-      }
 
       // evaluate
       currentResult = nextExpression.evaluate(currentResult.context);
@@ -94,6 +81,7 @@ function getParser(yuzuExpression: string) {
   parser.register("Fun", funParselet);
   parser.register("Backslash", lambdaParselet);
   parser.register("Blop", blopParselet);
+  parser.register("Brop", bropParselet);
   parser.register("Eval", evalParselet);
   return parser;
 }

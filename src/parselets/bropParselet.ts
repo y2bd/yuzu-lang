@@ -16,20 +16,20 @@ import { NumericalExpression } from "./numericalParselet";
 import { parseUntil } from "./util";
 import { infixOperatorParselet } from "./infixOperatorParselet";
 
-export type BlopExpression = ReturnType<typeof blopExpression>;
+export type BropExpression = ReturnType<typeof bropExpression>;
 
-export interface BlopArg {
+export interface BropArg {
   readonly name: string;
 }
 
-export const blopExpression = (
+export const bropExpression = (
   name: string,
   precedence: number,
-  args: BlopArg[],
+  args: BropArg[],
   body: Expression
 ) =>
   ({
-    type: "blop",
+    type: "brop",
     name,
     precedence,
     args,
@@ -37,7 +37,7 @@ export const blopExpression = (
     cannotBeLeftHandInInfixExpression: true,
     print() {
       const argStr = args.map(arg => arg.name).join(", ");
-      return `blop(${precedence}) ${name}(${argStr}) ${body.print()} end`;
+      return `brop(${precedence}) ${name}(${argStr}) ${body.print()} end`;
     },
     evaluate(ctx: EvaluationContext): EvaluationResult {
       const result = ((): FunctionBinding => {
@@ -89,7 +89,7 @@ export const blopExpression = (
     }
   } as const);
 
-export const blopParselet: PrefixParselet = {
+export const bropParselet: PrefixParselet = {
   parse(parser: Parser, _: Token) {
     parser.consume("LeftParen");
 
@@ -110,7 +110,7 @@ export const blopParselet: PrefixParselet = {
 
     parser.consume("LeftParen");
 
-    const args: BlopArg[] = [];
+    const args: BropArg[] = [];
     while (!parser.match("RightParen")) {
       if (args.length >= 2) {
         throw new Error("binary operators can only have two arguments");
@@ -132,7 +132,7 @@ export const blopParselet: PrefixParselet = {
     // TODO what if the body fails to parse?
     parser.registerRuntimeInfix(
       (name as NameExpression).name,
-      infixOperatorParselet(precedence),
+      infixOperatorParselet(precedence, "right"),
       // by doing this, the user can also use infix operators
       // as functions
       nameParselet
@@ -141,7 +141,7 @@ export const blopParselet: PrefixParselet = {
     let bodyExprs: Expression[];
     ({ exprs: bodyExprs } = parseUntil(parser, ["End"]));
 
-    return blopExpression(
+    return bropExpression(
       (name as NameExpression).name,
       precedence,
       args,

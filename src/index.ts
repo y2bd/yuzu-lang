@@ -21,15 +21,21 @@ blop(3) >(left, right)
   eval 'return this.left > this.right'
 end
 
-fun factorial(n)
-  if n < 2 then
-    n
+blop(3) ==(left, right)
+  eval 'return this.left === this.right'
+end
+
+brop(6) ^(left, right)
+  if right > 1 then
+    left * (left ^ (right - 1))
+  elif right == 1 then
+    left
   else
-    n * factorial(n - 1)
+    1
   end
 end
 
-factorial(10)
+3 ^ 2 ^ 3
 `;
 
 // tslint:disable-next-line:no-consecutive-blank-lines

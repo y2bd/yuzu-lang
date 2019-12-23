@@ -44,9 +44,11 @@ export const infixExpression = (
     }
   } as const);
 
-export const infixOperatorParselet = (precedence: number): InfixParselet => ({
+export const infixOperatorParselet = (precedence: number, associativity: "left" | "right" = "left"): InfixParselet => ({
   precedence,
   parse(parser: Parser, left: Expression, token: Token) {
-    return infixExpression(left, token, parser.parseExpression());
+    return infixExpression(left, token, parser.parseExpression(
+      precedence - (associativity === "right" ? 1 : 0)
+    ));
   }
 });
