@@ -1,10 +1,4 @@
-import {
-  Binding,
-  EvaluationContext,
-  EvaluationResult,
-  Expression,
-  functionBinding
-} from "../pratt/expression";
+import { Binding, EvaluationContext, EvaluationResult, Expression, functionBinding } from "../pratt/expression";
 import { Parser, PrefixParselet } from "../pratt/parser";
 import { Token } from "../pratt/token";
 import { doExpression } from "./doParselet";
@@ -23,6 +17,13 @@ export const lambdaExpression = (args: LambdaArg[], body: Expression) =>
     args,
     body,
     cannotBeLeftHandInInfixExpression: true,
+    emit() {
+      return [
+        `(${args.map(arg => arg.name).join(", ")}) => {\n`,
+        ...body.emit(),
+        `}\n`
+      ];
+    },
     print() {
       const argStr = args.map(arg => arg.name).join(", ");
       return `\(${argStr}) ${body.print()} end`;

@@ -1,14 +1,8 @@
-import {
-  Binding,
-  EvaluationContext,
-  EvaluationResult,
-  Expression,
-  functionBinding
-} from "../pratt/expression";
+import { Binding, EvaluationContext, EvaluationResult, Expression, functionBinding } from "../pratt/expression";
 import { InfixParselet, Parser } from "../pratt/parser";
 import { Precedence } from "../pratt/precedence";
 import { Token } from "../pratt/token";
-import { resolveLate } from "./util";
+import { flatMap, resolveLate } from "./util";
 
 export const callExpression = (callee: Expression, args: Expression[]) => ({
   type: "call",
@@ -19,6 +13,11 @@ export const callExpression = (callee: Expression, args: Expression[]) => ({
     const argStr = args.map(arg => arg.print()).join(", ");
 
     return `${calleeStr}(${argStr})`;
+  },
+  emit() {
+    return [
+      `(${callee.emit().join})(${args.map((arg) => arg.emit().join('')).join(', ')})`,
+    ]
   },
   evaluate(ctx: EvaluationContext): EvaluationResult {
     const calleeRes = callee.evaluate(ctx);

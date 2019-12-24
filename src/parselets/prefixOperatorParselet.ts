@@ -9,6 +9,9 @@ export const prefixExpression = (operator: TokenType, operand: Expression) =>
     type: "prefix",
     operator,
     operand,
+    emit() {
+      throw new Error("Not yet implemented");
+    },
     print() {
       return `${Tokens[operator]} ${operand.print()}`;
     },

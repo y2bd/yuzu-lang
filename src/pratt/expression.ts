@@ -1,6 +1,7 @@
 export interface Expression {
   readonly type: string;
   readonly cannotBeLeftHandInInfixExpression?: boolean;
+  emit(): string[];
   print(): string;
   evaluate(context: EvaluationContext): EvaluationResult;
 }

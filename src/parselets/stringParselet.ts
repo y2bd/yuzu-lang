@@ -12,6 +12,9 @@ export const stringExpression = (str: string) =>
   ({
     type: "string",
     string: str,
+    emit() {
+      return [`"${str}"`];
+    },
     print() {
       return str;
     },

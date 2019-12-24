@@ -17,6 +17,11 @@ export const evalExpression = (evalStr: string) =>
     print() {
       return `eval '${evalStr}'`;
     },
+    emit() {
+      return [
+        `new Function(${evalStr.replace(/this\./g, '')}).call()`,
+      ]
+    },
     evaluate(ctx: EvaluationContext): EvaluationResult {
       const evalCtx = Object.keys(ctx.bindings).reduce(
         (actx, key) => ({

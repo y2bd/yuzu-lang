@@ -8,6 +8,9 @@ export const nameExpression = (name: string) =>
   ({
     type: "name",
     name,
+    emit() {
+      return [name];
+    },
     print() {
       return name;
     },

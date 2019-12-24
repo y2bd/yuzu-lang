@@ -31,6 +31,9 @@ export const funExpression = (name: string, args: FunArg[], body: Expression) =>
       const argStr = args.map(arg => arg.name).join(", ");
       return `fun ${name}(${argStr}) ${body.print()} end`;
     },
+    emit() {
+      throw new Error("Not yet implemented");
+    },
     evaluate(ctx: EvaluationContext): EvaluationResult {
       const result = ((): FunctionBinding => {
         const recursiveContext: EvaluationContext = {

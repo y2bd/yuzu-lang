@@ -18,6 +18,11 @@ export const infixExpression = (
     print() {
       return `${left.print()} ${Tokens[token.type] || token} ${right.print()}`;
     },
+    emit() {
+      return [
+        `op_table[\`${token.text}\`](${left.emit().join('')}, ${right.emit().join('')})`,
+      ]
+    },
     evaluate(ctx: EvaluationContext) {
       const operatorLookup = ctx.bindings[token.type];
       if (operatorLookup == null) {

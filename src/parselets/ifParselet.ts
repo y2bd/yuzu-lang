@@ -35,6 +35,9 @@ export const ifExpression = (ifClauses: IfClause[], elseClause: ElseClause) =>
 
       return `${ifStr} ${elifStr} ${elseStr}`;
     },
+    emit() {
+      throw new Error("Not yet implemented");
+    },
     evaluate(ctx: EvaluationContext): EvaluationResult {
       for (const ifClause of ifClauses) {
         const cond = ifClause.condition.evaluate(ctx);

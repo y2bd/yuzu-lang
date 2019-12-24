@@ -15,6 +15,9 @@ export const groupExpression = (inner: Expression) =>
     print() {
       return `(${inner.print()})`;
     },
+    emit() {
+      return [`(${inner.emit().join('')})`];
+    },
     evaluate(ctx: EvaluationContext): EvaluationResult {
       return inner.evaluate(ctx);
     }

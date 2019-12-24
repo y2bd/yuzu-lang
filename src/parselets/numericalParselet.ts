@@ -12,6 +12,9 @@ export const numericalExpression = (num: string) =>
   ({
     type: "numerical",
     number: num,
+    emit() {
+      return [`${num}`];
+    },
     print() {
       return num;
     },

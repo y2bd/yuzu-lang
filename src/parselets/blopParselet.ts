@@ -13,7 +13,7 @@ import { Token } from "../pratt/token";
 import { doExpression } from "./doParselet";
 import { NameExpression, nameParselet } from "./nameParselet";
 import { NumericalExpression } from "./numericalParselet";
-import { parseUntil } from "./util";
+import { parseUntil, interpose } from "./util";
 import { infixOperatorParselet } from "./infixOperatorParselet";
 
 export type BlopExpression = ReturnType<typeof blopExpression>;
@@ -38,6 +38,30 @@ export const blopExpression = (
     print() {
       const argStr = args.map(arg => arg.name).join(", ");
       return `blop(${precedence}) ${name}(${argStr}) ${body.print()} end`;
+    },
+    emit() {
+      return [
+        `(`,
+        `op_table`,
+        `=`,
+        `op_table`,
+        `||`,
+        `{}`,
+        `)`,
+        `[`,
+        `\``,
+        name,
+        `\``,
+        `]`,
+        `=`,
+        `(`,
+        ...interpose(args.map(arg => arg.name), ", "),
+        `)`,
+        `=>`,
+        `{`,
+        ...body.emit(),
+        `}`
+      ]
     },
     evaluate(ctx: EvaluationContext): EvaluationResult {
       const result = ((): FunctionBinding => {
